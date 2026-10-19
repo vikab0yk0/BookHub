@@ -1,4 +1,4 @@
    venv_bookhub/
    __pycache__/
    *.pyc
-   .env
+   *.env
