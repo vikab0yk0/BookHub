@@ -5,7 +5,7 @@ def seed_database():
     session = SessionLocal()
     try:
         if session.query(Role).first():
-            print("[INFO] База данных уже содержит данные. Пропуск сидинга.")
+            print("[INFO] База данных уже содержит данные.")
             return
 
         print("[SEED] Создание начальных ролей...")

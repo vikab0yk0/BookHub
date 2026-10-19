@@ -12,8 +12,8 @@ class UserBook(Base):
     __tablename__ = "user_books"
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True)
-    book_id: Mapped[int] = mapped_column(ForeignKey("books.book_id", ondelete="CASCADE"), primary_key=True)
-    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    book_id: Mapped[int] = mapped_column(ForeignKey("books.book_id", ondelete="CASCADE"), primary_key=True, index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
     added_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (

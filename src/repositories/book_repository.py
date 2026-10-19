@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlalchemy import select
+from sqlalchemy import select, inspect
 from sqlalchemy.orm import Session, selectinload
 from src.models.book import Book
 from src.models.review import Review
@@ -13,8 +13,14 @@ class BookRepository:
             title=title, author=author, genre=genre,
             annotation=annotation, content=content, created_by=created_by
         )
+        # print(f"\n\n\t\t\t transient = {inspect(book).transient}\n\n")
+
         self.session.add(book)
+        # print(f"\n\n\t\t\t pending = {inspect(book).pending}\n\n")
+
         self.session.commit()
+        # print(f"\n\n\t\t\t persistent = {inspect(book).persistent}\n\n")
+
         self.session.refresh(book)
         return book
 
