@@ -64,7 +64,6 @@ def update_book(
     admin: User = Depends(require_admin),
     session: Session = Depends(get_session),
 ):
-    """Редактировать книгу. Только admin."""
     repo = BookRepository(session)
     book = repo.get_by_id(book_id)
     if not book:
@@ -78,7 +77,6 @@ def delete_book(
     admin: User = Depends(require_admin),
     session: Session = Depends(get_session),
 ):
-    """Удалить книгу. Только admin."""
     repo = BookRepository(session)
     if not repo.delete(book_id):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Книга не найдена")

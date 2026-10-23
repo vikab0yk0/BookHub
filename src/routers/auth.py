@@ -45,7 +45,7 @@ def login(
     data: LoginIn,
     session: Session = Depends(get_session),
 ):
-    """Проверяет email + пароль, возвращает JWT-токен."""
+
     auth = AuthService(session)
     try:
         token = auth.login(

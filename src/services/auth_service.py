@@ -32,8 +32,8 @@ class AuthService:
     @staticmethod
     def create_token(user: User) -> str:
         payload = {
-            "sub": str(user.user_id),        # subject — ID пользователя
-            "role": user.role.name,           # роль: admin / user
+            "sub": str(user.user_id),
+            "role": user.role.name,
             "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_expire_minutes),
             "iat": datetime.now(timezone.utc),
         }

@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class BookCreate(BaseModel):
-    """Вход — создание книги (только admin)."""
+
     title: str = Field(min_length=1, max_length=255)
     author: str = Field(min_length=1, max_length=255)
     genre: str | None = Field(None, max_length=100)
@@ -12,7 +12,6 @@ class BookCreate(BaseModel):
 
 
 class BookUpdate(BaseModel):
-    """Вход — редактирование книги (только admin)."""
     title: str | None = Field(None, min_length=1, max_length=255)
     author: str | None = Field(None, min_length=1, max_length=255)
     genre: str | None = Field(None, max_length=100)
@@ -21,7 +20,6 @@ class BookUpdate(BaseModel):
 
 
 class BookShort(BaseModel):
-    """Выход — для списка книг (без content)."""
     model_config = ConfigDict(from_attributes=True)
 
     book_id: int
@@ -31,7 +29,6 @@ class BookShort(BaseModel):
 
 
 class BookFull(BaseModel):
-    """Выход — полная информация о книге."""
     model_config = ConfigDict(from_attributes=True)
 
     book_id: int
