@@ -16,7 +16,6 @@ class RecommendationServicer(recommendation_pb2_grpc.RecommendationServiceServic
 
         session = SessionLocal()
         try:
-            # 1. Книги, с которыми пользователь уже взаимодействовал (их рекомендовать не нужно)
             read_or_listed = session.scalars(
                 select(UserBook.book_id).where(UserBook.user_id == user_id)
             ).all()
@@ -25,7 +24,7 @@ class RecommendationServicer(recommendation_pb2_grpc.RecommendationServiceServic
             ).all()
             excluded_book_ids = set(read_or_listed) | set(reviewed)
 
-            # 2. Определение любимых жанров пользователя (высокие оценки >= 4 или книги в избранном)
+
             favorite_books_ids = session.scalars(
                 select(UserBook.book_id).where(
                     UserBook.user_id == user_id, 
@@ -53,22 +52,22 @@ class RecommendationServicer(recommendation_pb2_grpc.RecommendationServiceServic
 
             print(f"[gRPC SERVER] Предпочтения пользователя user_id={user_id}: топ-жанр='{top_genre}', исключено книг={len(excluded_book_ids)}")
 
-            # 3. Подбор кандидатов для рекомендаций
+
             candidates = session.scalars(
                 select(Book).where(~Book.book_id.in_(excluded_book_ids) if excluded_book_ids else True)
             ).all()
 
             scored_recommendations = []
             for book in candidates:
-                score = 3.0  # Базовый скор
+                score = 3.0
                 reason = "Рекомендация из каталога"
 
-                # Бонус за совпадение с любимым жанром
+
                 if top_genre and book.genre == top_genre:
                     score += 2.0
                     reason = f"На основе вашего интереса к жанру «{top_genre}»"
 
-                # Учет средней оценки книги другими читателями
+
                 avg_rating = session.scalar(
                     select(func.avg(Review.rating)).where(Review.book_id == book.book_id)
                 )
@@ -79,11 +78,11 @@ class RecommendationServicer(recommendation_pb2_grpc.RecommendationServiceServic
 
                 scored_recommendations.append((book.book_id, score, reason))
 
-            # Сортировка по убыванию скора и взятие limit
+
             scored_recommendations.sort(key=lambda x: x[1], reverse=True)
             selected = scored_recommendations[:limit]
 
-            # Случай холодного старта, если книг-кандидатов не нашлось или каталог пуст
+
             if not selected and candidates:
                 selected = [(b.book_id, 1.0, "Популярная книга") for b in candidates[:limit]]
 

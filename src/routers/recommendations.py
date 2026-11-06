@@ -26,13 +26,11 @@ def get_my_recommendations(
     """
     print(f"\n[FastAPI] Получен HTTP-запрос /recommendations от user_id={current_user.user_id}")
     
-    # 1. Формирование gRPC-запроса (Protobuf message)
     grpc_request = recommendation_pb2.RecommendationRequest(
         user_id=current_user.user_id,
         limit=limit,
     )
 
-    # 2. Вызов удаленного метода через gRPC Stub с установкой дедлайна (3 секунды)
     try:
         print("[FastAPI] Отправка синхронного вызова GetRecommendations в gRPC-сервис...")
         grpc_response = stub.GetRecommendations(grpc_request, timeout=3.0)
@@ -55,7 +53,7 @@ def get_my_recommendations(
                 detail=f"Ошибка сервиса рекомендаций: {e.details()}",
             )
 
-    # 3. Обогащение результата данными о книгах из БД
+
     book_repo = BookRepository(session)
     result_items = []
     
