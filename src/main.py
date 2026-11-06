@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.routers import auth, books, reviews, user_books, bookmarks, quotes
+from src.routers import auth, books, reviews, user_books, bookmarks, quotes, recommendations
 
 
 app = FastAPI(
@@ -15,6 +15,7 @@ app.include_router(reviews.router)
 app.include_router(user_books.router)
 app.include_router(bookmarks.router)
 app.include_router(quotes.router)
+app.include_router(recommendations.router)
 
 
 @app.get("/", tags=["root"])
