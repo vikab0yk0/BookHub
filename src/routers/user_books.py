@@ -1,6 +1,7 @@
+
+from src.dependencies.rabbitmq import publish_event
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
 from src.dependencies.auth import get_current_user
 from src.dependencies.db import get_session
 from src.models.user import User
@@ -18,25 +19,37 @@ def get_my_list(
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
-    """Мои книги с указанным статусом."""
     return UserBookRepository(session).get_user_books(user.user_id, status)
+
 
 
 @router.post("/books/{book_id}/lists", response_model=UserBookOut)
 def add_to_list(
-    book_id: int,
-    data: UserBookIn,
-    user: User = Depends(get_current_user),
-    session: Session = Depends(get_session),
+        book_id: int,
+        data: UserBookIn,
+        user: User = Depends(get_current_user),
+        session: Session = Depends(get_session),
 ):
-    """Добавить книгу в список."""
-    if not BookRepository(session).get_by_id(book_id):
+    book_repo = BookRepository(session)
+    book = book_repo.get_by_id(book_id)
+
+    if not book:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Книга не найдена")
-    return UserBookRepository(session).add_to_list(
+
+    result = UserBookRepository(session).add_to_list(
         user_id=user.user_id,
         book_id=book_id,
         status=data.status,
     )
+
+    publish_event({
+        "event": "book_added_to_list",
+        "user_id": user.user_id,
+        "book_title": book.title,
+        "status": data.status
+    })
+
+    return result
 
 
 @router.delete("/books/{book_id}/lists", status_code=204)
@@ -45,7 +58,7 @@ def remove_from_list(
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
-    """Убрать книгу из списков."""
+
     repo = UserBookRepository(session)
     if not repo.remove(user.user_id, book_id):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Запись не найдена")
