@@ -9,3 +9,6 @@ passlib[bcrypt]
 bcrypt==4.0.1
 python-multipart
 email-validator
+grpcio>=1.60.0
+grpcio-tools>=1.60.0
+protobuf>=7.35.1
